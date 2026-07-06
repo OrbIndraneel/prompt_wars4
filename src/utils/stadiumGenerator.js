@@ -28,7 +28,7 @@ export function describeAnnularSector(x, y, innerRadiusX, innerRadiusY, outerRad
 export function generateStadiumData(gates, levels, capacity) {
   const centerX = 400;
   const centerY = 300;
-  const baseInnerRadiusX = 80;  // Narrower
+  const baseInnerRadiusX = 110;  // Slightly wider
   const baseInnerRadiusY = 140; // Taller to make it a vertical oval
   const ringThickness = Math.max(30, Math.min(80, capacity / (levels * 1000))); // Dynamic thickness based on capacity
   const gapAngle = gates > 0 ? Math.min(15, 360 / (gates * 3)) : 0; // The physical gate gaps
