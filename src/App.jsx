@@ -25,7 +25,14 @@ function App() {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const chatEndRef = useRef(null);
+
+  // Apply Theme
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Generator State
   const [isGeneratorMode, setIsGeneratorMode] = useState(false);
@@ -441,9 +448,13 @@ Provide a brief, professional, and actionable response based on the live zone st
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Theme Mode</span>
-                      <select style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }}>
-                        <option>Neumorphic Light</option>
-                        <option disabled>Dark Mode (Coming Soon)</option>
+                      <select 
+                        value={theme}
+                        onChange={(e) => setTheme(e.target.value)}
+                        style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none', color: 'var(--text-main)' }}
+                      >
+                        <option value="light">Neumorphic Light</option>
+                        <option value="dark">Neumorphic Dark</option>
                       </select>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

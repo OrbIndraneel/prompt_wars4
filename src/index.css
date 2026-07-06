@@ -24,6 +24,21 @@
   --shadow-raised-sm: 4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255, 0.5);
 }
 
+[data-theme="dark"] {
+  --bg-color: #1a202c;
+  --bg-gradient: #1a202c;
+  --panel-bg: #1a202c;
+  --sidebar-bg: #1a202c;
+  --sidebar-active-bg: #2d3748;
+  --text-main: #f7fafc;
+  --text-muted: #a0aec0;
+  
+  /* Neumorphic Shadows for Dark Theme */
+  --shadow-raised: 9px 9px 16px rgba(0,0,0,0.6), -9px -9px 16px rgba(45,55,72, 0.5);
+  --shadow-pressed: inset 6px 6px 10px 0 rgba(0,0,0, 0.7), inset -6px -6px 10px 0 rgba(45,55,72, 0.8);
+  --shadow-raised-sm: 4px 4px 8px rgba(0,0,0,0.6), -4px -4px 8px rgba(45,55,72, 0.5);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
