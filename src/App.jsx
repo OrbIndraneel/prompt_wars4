@@ -174,7 +174,7 @@ Provide a brief, professional, and actionable response based on the live zone st
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
-          <Activity size={28} color="var(--text-main)" />
+          <img src="/logo.png" alt="OnStadium Logo" style={{ height: '36px', filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.2))' }} />
           OnStadium
         </div>
         
