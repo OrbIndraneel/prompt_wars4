@@ -155,7 +155,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                 <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Admin</div>
               </div>
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'white' }}>➔</button>
+            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => alert('Logging out of StadiumCompanion AI...')}>➔</button>
           </div>
         </nav>
       </aside>
@@ -169,7 +169,9 @@ Provide a brief, professional, and actionable response based on the live zone st
               <Search size={18} style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }} />
               <input type="text" className="search-bar" placeholder="Search operations..." style={{ paddingLeft: '2.5rem' }} />
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.5rem' }}><Bell size={20} /></button>
+            <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => alert('Opening notifications...')}>
+              <Bell size={20} />
+            </button>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: 'var(--shadow-raised-sm)', color: 'var(--text-main)' }}>
               SO
             </div>
@@ -276,7 +278,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                     <div className="flex gap-4 items-center">
                       <span style={{ background: 'rgba(255,255,255,0.1)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>{s.count} Members</span>
                       <span style={{ color: s.status === 'Active' ? 'var(--accent-green)' : 'var(--accent-yellow)', fontSize: '0.9rem', fontWeight: 500 }}>{s.status}</span>
-                      <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }}>Reassign</button>
+                      <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => alert(`Reassigning ${s.name} to a new zone...`)}>Reassign</button>
                     </div>
                   </div>
                 ))}
@@ -290,7 +292,7 @@ Provide a brief, professional, and actionable response based on the live zone st
             <div className="glass-panel" style={{ padding: '1.5rem' }}>
               <div className="flex justify-between items-center" style={{ marginBottom: '1rem' }}>
                 <h3>Active Incidents & Alerts</h3>
-                <button className="btn btn-primary" style={{ fontSize: '0.9rem' }}>Report Incident</button>
+                <button className="btn btn-primary" style={{ fontSize: '0.9rem' }} onClick={() => alert('Opening Incident Report form...')}>Report Incident</button>
               </div>
               <div className="flex flex-col gap-4">
                 {[
@@ -303,7 +305,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                       <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{inc.title}</div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{inc.time} • Type: {inc.type}</div>
                     </div>
-                    <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }}>View Details</button>
+                    <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => alert(`Viewing details for: ${inc.title}`)}>View Details</button>
                   </div>
                 ))}
               </div>
@@ -338,7 +340,7 @@ Provide a brief, professional, and actionable response based on the live zone st
               </div>
               
               <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn btn-primary">Save Changes</button>
+                <button className="btn btn-primary" onClick={() => alert('Settings saved successfully!')}>Save Changes</button>
               </div>
             </div>
           </div>
