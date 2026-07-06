@@ -241,16 +241,16 @@ Provide a brief, professional, and actionable response based on the live zone st
 
         {activeTab === 'Zone Maps' && (
           <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="glass-panel" style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 20, left: 20, background: 'var(--panel-bg)', padding: '1rem', borderRadius: '8px', zIndex: 10 }}>
-                <h3 style={{ marginBottom: '0.5rem' }}>Map Legend</h3>
-                <div className="flex items-center gap-2" style={{ marginBottom: '0.25rem', fontSize: '0.9rem' }}><div style={{ width: 12, height: 12, background: 'var(--accent-green)', borderRadius: '50%' }}></div> Normal</div>
-                <div className="flex items-center gap-2" style={{ marginBottom: '0.25rem', fontSize: '0.9rem' }}><div style={{ width: 12, height: 12, background: 'var(--accent-yellow)', borderRadius: '50%' }}></div> Warning</div>
-                <div className="flex items-center gap-2" style={{ fontSize: '0.9rem' }}><div style={{ width: 12, height: 12, background: 'var(--accent-red)', borderRadius: '50%' }}></div> Critical</div>
+            <div className="card" style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 20, left: 20, background: 'var(--bg-color)', padding: '1.25rem', borderRadius: '12px', zIndex: 10, boxShadow: 'var(--shadow-raised-sm)' }}>
+                <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Map Legend</h3>
+                <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-green)', borderRadius: '50%' }}></div> Normal</div>
+                <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-yellow)', borderRadius: '50%' }}></div> Warning</div>
+                <div className="flex items-center gap-2" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-red)', borderRadius: '50%' }}></div> Critical</div>
               </div>
-              <div style={{ width: '60%', height: '60%', border: '2px dashed rgba(255,255,255,0.2)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                <MapIcon size={64} color="rgba(255,255,255,0.1)" />
-                <span style={{ position: 'absolute', color: 'rgba(255,255,255,0.3)', fontSize: '1.5rem', fontWeight: 600 }}>Interactive Stadium SVG/Canvas Placeholder</span>
+              <div style={{ width: '60%', height: '60%', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexDirection: 'column', gap: '1rem' }}>
+                <MapIcon size={64} color="var(--text-muted)" style={{ opacity: 0.3 }} />
+                <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontWeight: 600, opacity: 0.5, textAlign: 'center', padding: '0 2rem' }}>Interactive Stadium SVG/Canvas Placeholder</span>
               </div>
             </div>
           </div>
