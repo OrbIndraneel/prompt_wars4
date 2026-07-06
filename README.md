@@ -1,34 +1,52 @@
-# OnStadium: FIFA World Cup 2026
+<div align="center">
+  <img src="public/logo.png" alt="OnStadium Logo" width="100"/>
+  <h1>🏟️ OnStadium AI</h1>
+  <p><strong>FIFA World Cup 2026 • GenAI Operational Intelligence Dashboard</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
+    <img src="https://img.shields.io/badge/Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" />
+  </p>
+</div>
 
-*A Hackathon Project*
+---
 
-## 1. Chosen Vertical
-**Smart Stadium Operations & Venue Management**
+## 🎯 1. The Vertical
+**Smart Stadium Operations & Venue Management**  
+*Built specifically for the massive scale of the FIFA World Cup 2026.*
 
-## 2. Approach and Logic
-OnStadium is a GenAI-enabled operational intelligence dashboard designed for stadium staff, security, and venue managers during the FIFA World Cup 2026. The solution focuses on providing real-time oversight of crowd density, staff deployment, and active incidents. 
+## 🧠 2. Approach and Logic
+**OnStadium** is a cutting-edge, GenAI-enabled operational intelligence dashboard designed for stadium staff, security personnel, and venue managers. It provides real-time, birds-eye oversight of crowd density, staff deployment, and active incidents.
 
-The core logic relies on:
-- **Mock Data Engine**: A simulated real-time data feed representing stadium congestion metrics (e.g., North Gate density, VIP Lounge capacity) updating every few seconds to emulate live IoT sensor data.
-- **Dynamic Thresholding**: Visual alert states (Normal, Warning, Critical) are logically calculated on the fly based on the density percentage, instantly altering the UI (via a premium Neumorphism design system) to grab the operator's attention.
-- **Generative AI Integration**: Google's Gemini API is integrated as an "Ops Assistant AI". When staff encounter critical alerts, they can prompt the AI for strategic routing, staff reassignment, or emergency evacuation plans based on the live context of the stadium.
+### ⚙️ Core Engineering Pillars:
+* 📡 **Mock IoT Data Engine**: Simulates a live real-time data feed representing stadium congestion metrics (e.g., North Gate density, VIP Lounge capacity) updating every few seconds to emulate live turnstile and CCTV sensor data.
+* 🚦 **Dynamic Thresholding**: Visual alert states (`Normal`, `Warning`, `Critical`) are logically calculated on the fly. The UI instantly transforms to grab the operator's attention using a premium Neumorphism design system.
+* 🤖 **Generative AI Integration**: Powered by Google's Gemini API, the **Ops Assistant AI** intercepts critical alerts. Operators can prompt the AI in natural language to generate strategic routing, dynamic staff reassignment, and emergency evacuation protocols based on live context.
+* 🛡️ **Role-Based Access Control (RBAC)**: Tailored operational views separating Command Center Admins from Field Staff.
 
-## 3. How the Solution Works
-- **Overview Dashboard**: Displays high-level metrics (Total Attendance, Active Staff, Incidents) and a live feed of congestion in different stadium zones.
-- **Visual Alert System**: Zones surpassing specific density thresholds turn yellow (Warning) or red (Critical), with animated progress bars reflecting the severity.
-- **Ops Assistant Chatbox**: An interactive natural language interface where operators can type commands (e.g., "North Gate is congested"). The system intercepts this and uses the GenAI layer to process the contextual data and recommend actionable operations.
-- **Additional Modules**: 
-  - **Zone Maps**: Interactive spatial layout mapping (Placeholder).
-  - **Staff Deployment**: Tracks security, medical, and cleaning crews, their active locations, and status (Active/Standby).
-  - **Incidents Feed**: A categorized timeline of active alerts and reports prioritizing severe incidents.
+## 🚀 3. How the Solution Works
+* 📊 **Overview Dashboard**: High-level metrics (Total Attendance, Active Staff, Incidents) alongside a live, breathing feed of congestion across stadium zones.
+* 🗺️ **Algorithmic Zone Maps**: A dynamic, interactive layout map algorithmically generated via SVG, scaling to different stadium blueprints.
+* 👥 **Staff Deployment**: An interactive module tracking security, medical, and cleaning crews. Supports inline team-splitting and head-count reassignments on the fly.
+* 💬 **Ops Assistant Chatbox**: Type *"North Gate is congested"*, and the AI engine processes the contextual stadium data to recommend actionable, immediate operations.
 
-## 4. Assumptions Made
-- **Live Data Feed Accessibility**: We assume that during the actual event, IoT sensors, turnstile counters, and CCTV crowd analytics will provide the real-time density JSON payload that our current mock engine simulates.
-- **AI Response Latency**: We assume the operational internet backbone of the stadium will provide low-latency access to the GenAI API (simulated via a 1.5s timeout in the mock).
-- **Staff Devices**: The dashboard is designed to be responsive, assuming staff will access it via central command center desktop screens or robust tablet devices while on the move.
-- **Pre-trained Knowledge**: We assume the GenAI model used (Gemini) can be provided with a robust system prompt detailing the specific architecture and emergency protocols of the World Cup stadiums to ensure accurate advice.
+## 🔍 4. Assumptions Made
+1. **Live Data Feed Accessibility**: During the actual event, IoT sensors and CCTV crowd analytics will supply the real-time JSON payloads that our mock engine successfully simulates.
+2. **AI Response Latency**: The operational internet backbone of the stadium will provide low-latency access to the GenAI API (simulated here via a seamless frontend integration).
+3. **Responsive Operations**: Staff will access the dashboard via central command center desktops or robust field tablets.
+4. **Contextual Knowledge**: The GenAI model is pre-prompted with the specific architectural blueprints and emergency protocols of World Cup stadiums.
 
-## 5. Setup & Running
-1. `npm install`
-2. `npm run dev`
-3. Access at `http://localhost:5173`
+## 💻 5. Setup & Running
+Get the operational center up and running in seconds:
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Spin up the Vite dev server
+npm run dev
+```
+
+🌐 **Access the dashboard at:** `http://localhost:5173`
+
+> **Pro Tip:** Log in as *Command Center Admin* to view the Staff Deployment features, and toggle **Dark Mode** in the Settings tab to see the Neumorphic shadows pop! 🌙
