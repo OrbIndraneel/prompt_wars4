@@ -4,11 +4,12 @@ import './LandingPage.css';
 function LandingPage({ onLogin }) {
   const [staffId, setStaffId] = useState('');
   const [pin, setPin] = useState('');
+  const [role, setRole] = useState('admin');
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (staffId && pin) {
-      onLogin();
+      onLogin({ id: staffId, role });
     }
   };
 
@@ -57,6 +58,18 @@ function LandingPage({ onLogin }) {
                 onChange={(e) => setPin(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Role</label>
+              <select 
+                className="neumorphic-input"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="admin">Command Center Admin</option>
+                <option value="staff">Field Staff</option>
+              </select>
             </div>
 
             <button type="submit" className="login-btn">

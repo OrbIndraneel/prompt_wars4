@@ -20,7 +20,7 @@ const INITIAL_ZONES = [
 function App() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [zones, setZones] = useState(INITIAL_ZONES);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([
     { role: 'ai', text: 'StadiumOps AI initialized. How can I assist you with current operations?' }
@@ -164,15 +164,16 @@ Provide a brief, professional, and actionable response based on the live zone st
     return "I can assist with crowd management, resource allocation, and emergency routing. What specific area are you inquiring about?";
   };
 
-  const tabs = [
+  // Sidebar Navigation
+  const navItems = [
     { name: 'Overview', icon: <Activity size={20} /> },
     { name: 'Zone Maps', icon: <MapIcon size={20} /> },
-    { name: 'Staff Deployment', icon: <Users size={20} /> },
+    user?.role === 'admin' ? { name: 'Staff Deployment', icon: <Users size={20} /> } : null,
     { name: 'Incidents', icon: <Bell size={20} /> }
-  ];
+  ].filter(Boolean);
 
-  if (!isAuthenticated) {
-    return <LandingPage onLogin={() => setIsAuthenticated(true)} />;
+  if (!user) {
+    return <LandingPage onLogin={(userData) => { setUser(userData); setActiveTab('Overview'); }} />;
   }
 
   return (
@@ -185,7 +186,7 @@ Provide a brief, professional, and actionable response based on the live zone st
         </div>
         
         <nav className="nav-links">
-          {tabs.map(tab => (
+          {navItems.map(tab => (
             <div 
               key={tab.name}
               className={`nav-item ${activeTab === tab.name ? 'active' : ''}`}
@@ -202,14 +203,14 @@ Provide a brief, professional, and actionable response based on the live zone st
             <Settings size={20} /> Settings
           </div>
           
-          <div className="logout-card" style={{ marginTop: '2rem' }} onClick={() => setIsAuthenticated(false)}>
+          <div className="logout-card" style={{ marginTop: '2rem', cursor: 'pointer' }} onClick={() => setUser(null)}>
             <div className="flex items-center gap-2">
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'white', color: 'var(--accent-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                JD
+                {user.id ? user.id.substring(0, 2).toUpperCase() : 'U'}
               </div>
               <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>John Doe</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Admin</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{user.id}</div>
+                <div style={{ fontSize: '0.7rem', opacity: 0.8, textTransform: 'capitalize' }}>{user.role}</div>
               </div>
             </div>
             <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }}>➔</button>
