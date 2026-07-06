@@ -202,7 +202,7 @@ Provide a brief, professional, and actionable response based on the live zone st
             <Settings size={20} /> Settings
           </div>
           
-          <div className="logout-card" style={{ marginTop: '2rem' }}>
+          <div className="logout-card" style={{ marginTop: '2rem' }} onClick={() => setIsAuthenticated(false)}>
             <div className="flex items-center gap-2">
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'white', color: 'var(--accent-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                 JD
@@ -212,7 +212,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                 <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Admin</div>
               </div>
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => setIsAuthenticated(false)}>➔</button>
+            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }}>➔</button>
           </div>
         </nav>
       </aside>
