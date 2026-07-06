@@ -138,7 +138,12 @@ Provide a brief, professional, and actionable response based on the live zone st
             </div>
           ))}
           <div style={{ flexGrow: 1 }}></div>
-          <div className="nav-item"><Settings size={20} /> Settings</div>
+          <div 
+            className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('Settings')}
+          >
+            <Settings size={20} /> Settings
+          </div>
           
           <div className="logout-card" style={{ marginTop: '2rem' }}>
             <div className="flex items-center gap-2">
@@ -301,6 +306,57 @@ Provide a brief, professional, and actionable response based on the live zone st
                     <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }}>View Details</button>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'Settings' && (
+          <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="card" style={{ padding: '2rem' }}>
+              <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-main)' }}>Platform Settings</h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                <div style={{ padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '12px', boxShadow: 'var(--shadow-pressed)' }}>
+                  <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Settings size={18} /> General Preferences
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Theme Mode</span>
+                      <select style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }}>
+                        <option>Neumorphic Light</option>
+                        <option disabled>Dark Mode (Coming Soon)</option>
+                      </select>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Push Notifications</span>
+                      <input type="checkbox" defaultChecked style={{ width: '1.2rem', height: '1.2rem' }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '12px', boxShadow: 'var(--shadow-pressed)' }}>
+                  <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Activity size={18} /> AI Configuration
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>AI Model</span>
+                      <span style={{ fontSize: '0.85rem', padding: '0.25rem 0.75rem', background: 'var(--accent-blue)', color: 'white', borderRadius: '12px' }}>Gemini Flash</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>API Status</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--accent-green)' }}>
+                        <CheckCircle size={16} /> Connected & Active
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <button className="btn btn-primary">Save Changes</button>
               </div>
             </div>
           </div>
