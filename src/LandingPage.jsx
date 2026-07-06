@@ -14,6 +14,12 @@ function LandingPage({ onLogin }) {
 
   return (
     <div className="landing-page">
+      
+      {/* 3D Isometric Floating Stadium Graphic */}
+      <div className="hero-image-container">
+        <img src="/isometric_stadium.png" alt="Isometric Stadium" />
+      </div>
+
       {/* Frosted Glass Overlay covering the left half (hiding the baked-in text from the image) */}
       <div className="landing-overlay">
         
