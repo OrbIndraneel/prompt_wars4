@@ -248,9 +248,43 @@ Provide a brief, professional, and actionable response based on the live zone st
                 <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-yellow)', borderRadius: '50%' }}></div> Warning</div>
                 <div className="flex items-center gap-2" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-red)', borderRadius: '50%' }}></div> Critical</div>
               </div>
-              <div style={{ width: '60%', height: '60%', border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexDirection: 'column', gap: '1rem' }}>
-                <MapIcon size={64} color="var(--text-muted)" style={{ opacity: 0.3 }} />
-                <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontWeight: 600, opacity: 0.5, textAlign: 'center', padding: '0 2rem' }}>Interactive Stadium SVG/Canvas Placeholder</span>
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg viewBox="0 0 800 600" style={{ width: '100%', height: '100%', filter: 'drop-shadow(var(--shadow-raised))' }}>
+                  {/* Center Pitch */}
+                  <rect x="250" y="150" width="300" height="300" rx="40" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  <circle cx="400" cy="300" r="50" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  <line x1="250" y1="300" x2="550" y2="300" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  
+                  {/* North Gate (z1) */}
+                  <path d="M 200 50 L 600 50 L 550 130 L 250 130 Z" 
+                        fill={zones.find(z => z.id === 'z1')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z1')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
+                  <text x="400" y="95" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">North Gate (Z1)</text>
+
+                  {/* South Concourse (z2) */}
+                  <path d="M 250 470 L 550 470 L 600 550 L 200 550 Z" 
+                        fill={zones.find(z => z.id === 'z2')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z2')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
+                  <text x="400" y="515" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">South Concourse (Z2)</text>
+
+                  {/* East Wing Seating (z3) */}
+                  <path d="M 570 150 L 750 200 L 750 400 L 570 450 Z" 
+                        fill={zones.find(z => z.id === 'z3')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z3')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
+                  <text x="660" y="305" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">East Wing (Z3)</text>
+
+                  {/* West Gate (z5) */}
+                  <path d="M 230 150 L 50 200 L 50 400 L 230 450 Z" 
+                        fill={zones.find(z => z.id === 'z5')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z5')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
+                  <text x="140" y="305" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">West Gate (Z5)</text>
+
+                  {/* VIP Lounge (z4) */}
+                  <rect x="620" y="50" width="130" height="80" rx="12" 
+                        fill={zones.find(z => z.id === 'z4')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z4')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.95" style={{ transition: 'fill 0.5s ease' }} />
+                  <text x="685" y="95" textAnchor="middle" fill="white" fontWeight="bold" fontSize="16">VIP Lounge (Z4)</text>
+                </svg>
               </div>
             </div>
           </div>
