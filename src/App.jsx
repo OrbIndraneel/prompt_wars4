@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { generateStadiumData } from './utils/stadiumGenerator';
+import LandingPage from './LandingPage';
 import './App.css';
 
 // MOCK DATA for Stadium Operations
@@ -19,6 +20,7 @@ const INITIAL_ZONES = [
 function App() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [zones, setZones] = useState(INITIAL_ZONES);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([
     { role: 'ai', text: 'StadiumOps AI initialized. How can I assist you with current operations?' }
@@ -169,6 +171,10 @@ Provide a brief, professional, and actionable response based on the live zone st
     { name: 'Incidents', icon: <Bell size={20} /> }
   ];
 
+  if (!isAuthenticated) {
+    return <LandingPage onLogin={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="app-container">
       {/* Sidebar */}
@@ -206,7 +212,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                 <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Admin</div>
               </div>
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => alert('Logging out of OnStadium...')}>➔</button>
+            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => setIsAuthenticated(false)}>➔</button>
           </div>
         </nav>
       </aside>
