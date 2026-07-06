@@ -316,7 +316,7 @@ Provide a brief, professional, and actionable response based on the live zone st
             <div className="card" style={{ padding: '2rem' }}>
               <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-main)' }}>Platform Settings</h2>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
                 <div style={{ padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '12px', boxShadow: 'var(--shadow-pressed)' }}>
                   <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Settings size={18} /> General Preferences
@@ -332,24 +332,6 @@ Provide a brief, professional, and actionable response based on the live zone st
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Push Notifications</span>
                       <input type="checkbox" defaultChecked style={{ width: '1.2rem', height: '1.2rem' }} />
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ padding: '1.5rem', background: 'var(--bg-color)', borderRadius: '12px', boxShadow: 'var(--shadow-pressed)' }}>
-                  <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Activity size={18} /> AI Configuration
-                  </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>AI Model</span>
-                      <span style={{ fontSize: '0.85rem', padding: '0.25rem 0.75rem', background: 'var(--accent-blue)', color: 'white', borderRadius: '12px' }}>Gemini Flash</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>API Status</span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--accent-green)' }}>
-                        <CheckCircle size={16} /> Connected & Active
-                      </div>
                     </div>
                   </div>
                 </div>
