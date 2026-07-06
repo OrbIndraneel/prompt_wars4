@@ -293,8 +293,9 @@ Provide a brief, professional, and actionable response based on the live zone st
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg viewBox="0 0 800 600" style={{ width: '100%', height: '100%', filter: 'drop-shadow(var(--shadow-raised))' }}>
                   {/* Center Pitch */}
-                  <rect x="300" y="200" width="200" height="200" rx="40" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
-                  <circle cx="400" cy="300" r="30" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  <rect x="330" y="230" width="140" height="140" rx="30" fill="transparent" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
+                  <circle cx="400" cy="300" r="20" fill="transparent" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
+                  <line x1="330" y1="300" x2="470" y2="300" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
                   
                   {/* Zones */}
                   {zones.map((zone, idx) => (
