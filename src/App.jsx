@@ -213,7 +213,7 @@ Provide a brief, professional, and actionable response based on the live zone st
               <Search size={18} style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }} />
               <input type="text" className="search-bar" placeholder="Search operations..." style={{ paddingLeft: '2.5rem' }} />
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => alert('Opening notifications...')}>
+            <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => setActiveTab('Incidents')}>
               <Bell size={20} />
             </button>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: 'var(--shadow-raised-sm)', color: 'var(--text-main)' }}>
