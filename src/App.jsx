@@ -56,8 +56,8 @@ function App() {
       };
       setStaff(prev => prev.map(s => s.id === team.id ? { ...s, count: s.count - reassignCount } : s).concat(newTeam));
     } else {
-      // Move whole team
-      setStaff(prev => prev.map(s => s.id === team.id ? { ...s, location: reassignZone, status: 'On Route' } : s));
+      // Move whole team and update its size if they requested more people
+      setStaff(prev => prev.map(s => s.id === team.id ? { ...s, location: reassignZone, status: 'On Route', count: reassignCount } : s));
     }
     setReassigningId(null);
   };
@@ -376,7 +376,6 @@ Provide a brief, professional, and actionable response based on the live zone st
                         </select>
                         <input 
                           type="number" 
-                          max={s.count} 
                           min={1} 
                           value={reassignCount} 
                           onChange={e => setReassignCount(Number(e.target.value))} 
