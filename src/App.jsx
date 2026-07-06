@@ -23,6 +23,7 @@ function App() {
     { role: 'ai', text: 'StadiumOps AI initialized. How can I assist you with current operations?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const chatEndRef = useRef(null);
 
   // Auto-scroll chat
@@ -57,11 +58,34 @@ function App() {
     setIsTyping(true);
 
     try {
-      setTimeout(() => {
-        const mockResponse = generateMockAIResponse(userMessage, zones);
-        setMessages(prev => [...prev, { role: 'ai', text: mockResponse }]);
-        setIsTyping(false);
-      }, 1500);
+      // Small timeout to allow UI to show typing indicator
+      setTimeout(async () => {
+        try {
+          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          if (apiKey && apiKey !== 'YOUR_API_KEY_HERE') {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const promptContext = `You are a Stadium Operations AI Assistant for the FIFA World Cup 2026.
+Current Live Zone Status (JSON):
+${JSON.stringify(zones)}
+
+The user asks: "${userMessage}"
+Provide a brief, professional, and actionable response based on the live zone status. Keep it under 3 sentences.`;
+
+            const result = await model.generateContent(promptContext);
+            setMessages(prev => [...prev, { role: 'ai', text: result.response.text() }]);
+          } else {
+            // Fallback to mock response if no API key is set
+            const mockResponse = generateMockAIResponse(userMessage, zones);
+            setMessages(prev => [...prev, { role: 'ai', text: mockResponse + " (Mock mode: No VITE_GEMINI_API_KEY found)" }]);
+          }
+        } catch (apiError) {
+          console.error("Gemini API Error:", apiError);
+          setMessages(prev => [...prev, { role: 'ai', text: "Error connecting to AI services. Please check your API key." }]);
+        } finally {
+          setIsTyping(false);
+        }
+      }, 500);
 
     } catch (error) {
       console.error(error);
@@ -158,13 +182,13 @@ function App() {
                 { title: 'Active Incidents', value: '3', icon: <ShieldAlert size={24} color="var(--accent-green)" /> },
                 { title: 'Avg Congestion', value: '42%', icon: <AlertTriangle size={24} color="var(--accent-yellow)" /> },
               ].map((metric, idx) => (
-                <div key={idx} className="card" style={{ flex: 1, padding: '1.25rem', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ width: 50, height: 50, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-pressed)' }}>
+                <div key={idx} className="card" style={{ flex: 1, padding: '1.5rem 1.25rem', flexDirection: 'row', alignItems: 'center', gap: '1.25rem' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-pressed)' }}>
                     {metric.icon}
                   </div>
-                  <div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{metric.title}</div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{metric.value}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.2 }}>{metric.title}</div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-main)' }}>{metric.value}</div>
                   </div>
                 </div>
               ))}
@@ -177,7 +201,7 @@ function App() {
                 <button className="btn btn-ghost" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }} onClick={() => setActiveTab('Zone Maps')}>Full Map</button>
               </div>
               
-              <div className="flex flex-col gap-4" style={{ marginTop: '1rem' }}>
+              <div className="flex flex-col gap-4" style={{ marginTop: '1rem', flexGrow: 1, overflowY: 'auto', paddingRight: '0.5rem' }}>
                 {zones.map(zone => (
                   <div key={zone.id} className="metric-item animate-fade-in">
                     <div className="flex items-center gap-4">
@@ -205,38 +229,6 @@ function App() {
               </div>
             </div>
 
-            {/* AI Assistant Chat */}
-            <div className="card ai-assistant">
-              <div className="card-title">
-                <div className="flex items-center gap-2">
-                  <Activity size={18} />
-                  Ops Assistant AI
-                </div>
-              </div>
-              <div className="chat-messages">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`message ${msg.role}`}>
-                    {msg.text}
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="message ai" style={{ opacity: 0.9 }}>Analyzing stadium data...</div>
-                )}
-                <div ref={chatEndRef} />
-              </div>
-              <form onSubmit={handleSendMessage} className="chat-input-container">
-                <input 
-                  type="text" 
-                  className="chat-input"
-                  placeholder="Ask for routing..." 
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                />
-                <button type="submit" className="icon-btn" disabled={!chatInput.trim() || isTyping}>
-                  <Send size={18} />
-                </button>
-              </form>
-            </div>
           </div>
         )}
 
@@ -314,6 +306,47 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* Floating Action Button */}
+      <button className="chatbot-fab" onClick={() => setIsChatOpen(!isChatOpen)}>
+        <Activity size={28} />
+      </button>
+
+      {/* AI Assistant Popup */}
+      {isChatOpen && (
+        <div className="ai-assistant-popup animate-fade-in">
+          <div className="card-title">
+            <div className="flex items-center gap-2">
+              <Activity size={18} />
+              Ops Assistant AI
+            </div>
+            <button className="btn btn-ghost" style={{ padding: 0 }} onClick={() => setIsChatOpen(false)}>✕</button>
+          </div>
+          <div className="chat-messages" style={{ overflowY: 'auto', flexGrow: 1, paddingRight: '0.5rem', marginBottom: '1rem' }}>
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`message ${msg.role}`}>
+                {msg.text}
+              </div>
+            ))}
+            {isTyping && (
+              <div className="message ai" style={{ opacity: 0.9 }}>Analyzing stadium data...</div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+          <form onSubmit={handleSendMessage} className="chat-input-container">
+            <input 
+              type="text" 
+              className="chat-input"
+              placeholder="Ask for routing..." 
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+            />
+            <button type="submit" className="icon-btn" disabled={!chatInput.trim() || isTyping}>
+              <Send size={18} />
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
