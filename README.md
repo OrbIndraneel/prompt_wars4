@@ -1,10 +1,12 @@
-# StadiumCompanion AI: FIFA World Cup 2026
+# OnStadium: FIFA World Cup 2026
+
+*A Hackathon Project*
 
 ## 1. Chosen Vertical
 **Smart Stadium Operations & Venue Management**
 
 ## 2. Approach and Logic
-StadiumCompanion AI is a GenAI-enabled operational intelligence dashboard designed for stadium staff, security, and venue managers during the FIFA World Cup 2026. The solution focuses on providing real-time oversight of crowd density, staff deployment, and active incidents. 
+OnStadium is a GenAI-enabled operational intelligence dashboard designed for stadium staff, security, and venue managers during the FIFA World Cup 2026. The solution focuses on providing real-time oversight of crowd density, staff deployment, and active incidents. 
 
 The core logic relies on:
 - **Mock Data Engine**: A simulated real-time data feed representing stadium congestion metrics (e.g., North Gate density, VIP Lounge capacity) updating every few seconds to emulate live IoT sensor data.

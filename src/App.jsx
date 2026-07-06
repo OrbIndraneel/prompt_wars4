@@ -174,8 +174,8 @@ Provide a brief, professional, and actionable response based on the live zone st
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
-          <Activity size={28} color="white" />
-          StadiumCompanion AI
+          <Activity size={28} color="var(--text-main)" />
+          OnStadium
         </div>
         
         <nav className="nav-links">
@@ -206,7 +206,7 @@ Provide a brief, professional, and actionable response based on the live zone st
                 <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Admin</div>
               </div>
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => alert('Logging out of StadiumCompanion AI...')}>➔</button>
+            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }} onClick={() => alert('Logging out of OnStadium...')}>➔</button>
           </div>
         </nav>
       </aside>
