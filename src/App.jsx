@@ -4,6 +4,7 @@ import {
   Send, AlertTriangle, CheckCircle, ShieldAlert 
 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateStadiumData } from './utils/stadiumGenerator';
 import './App.css';
 
 // MOCK DATA for Stadium Operations
@@ -26,6 +27,19 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const chatEndRef = useRef(null);
 
+  // Generator State
+  const [isGeneratorMode, setIsGeneratorMode] = useState(false);
+  const [genGates, setGenGates] = useState(8);
+  const [genLevels, setGenLevels] = useState(3);
+  const [genSeats, setGenSeats] = useState(50000);
+
+  // Auto-update global zones from generator map
+  useEffect(() => {
+    if (isGeneratorMode) {
+      setZones(generateStadiumData(genGates, genLevels, genSeats));
+    }
+  }, [genGates, genLevels, genSeats, isGeneratorMode]);
+
   // Auto-scroll chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,6 +49,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setZones(prev => prev.map(zone => {
+        // If the zone has a path (meaning it's generated), keep the path
         const variation = Math.floor(Math.random() * 11) - 5; // -5 to +5
         let newDensity = Math.max(0, Math.min(100, zone.density + variation));
         
@@ -241,6 +256,33 @@ Provide a brief, professional, and actionable response based on the live zone st
 
         {activeTab === 'Zone Maps' && (
           <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="flex justify-between items-center">
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Interactive Mapping</h2>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setIsGeneratorMode(!isGeneratorMode)}
+              >
+                {isGeneratorMode ? 'Exit Generator' : 'Layout Generator'}
+              </button>
+            </div>
+
+            {isGeneratorMode && (
+              <div className="card animate-fade-in" style={{ padding: '1.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Number of Gates ({genGates})</label>
+                  <input type="range" min="2" max="16" value={genGates} onChange={(e) => setGenGates(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Tiers / Levels ({genLevels})</label>
+                  <input type="range" min="1" max="5" value={genLevels} onChange={(e) => setGenLevels(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Capacity ({genSeats.toLocaleString()})</label>
+                  <input type="range" min="10000" max="100000" step="5000" value={genSeats} onChange={(e) => setGenSeats(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
+                </div>
+              </div>
+            )}
+
             <div className="card" style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 20, left: 20, background: 'var(--bg-color)', padding: '1.25rem', borderRadius: '12px', zIndex: 10, boxShadow: 'var(--shadow-raised-sm)' }}>
                 <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Map Legend</h3>
@@ -251,39 +293,28 @@ Provide a brief, professional, and actionable response based on the live zone st
               <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg viewBox="0 0 800 600" style={{ width: '100%', height: '100%', filter: 'drop-shadow(var(--shadow-raised))' }}>
                   {/* Center Pitch */}
-                  <rect x="250" y="150" width="300" height="300" rx="40" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
-                  <circle cx="400" cy="300" r="50" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
-                  <line x1="250" y1="300" x2="550" y2="300" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  <rect x="300" y="200" width="200" height="200" rx="40" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
+                  <circle cx="400" cy="300" r="30" fill="transparent" stroke="var(--text-muted)" strokeWidth="4" strokeDasharray="10 10" opacity="0.3" />
                   
-                  {/* North Gate (z1) */}
-                  <path d="M 200 50 L 600 50 L 550 130 L 250 130 Z" 
-                        fill={zones.find(z => z.id === 'z1')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z1')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
-                  <text x="400" y="95" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">North Gate (Z1)</text>
-
-                  {/* South Concourse (z2) */}
-                  <path d="M 250 470 L 550 470 L 600 550 L 200 550 Z" 
-                        fill={zones.find(z => z.id === 'z2')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z2')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
-                  <text x="400" y="515" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">South Concourse (Z2)</text>
-
-                  {/* East Wing Seating (z3) */}
-                  <path d="M 570 150 L 750 200 L 750 400 L 570 450 Z" 
-                        fill={zones.find(z => z.id === 'z3')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z3')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
-                  <text x="660" y="305" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">East Wing (Z3)</text>
-
-                  {/* West Gate (z5) */}
-                  <path d="M 230 150 L 50 200 L 50 400 L 230 450 Z" 
-                        fill={zones.find(z => z.id === 'z5')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z5')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.85" style={{ transition: 'fill 0.5s ease' }} />
-                  <text x="140" y="305" textAnchor="middle" fill="white" fontWeight="600" fontSize="18">West Gate (Z5)</text>
-
-                  {/* VIP Lounge (z4) */}
-                  <rect x="620" y="50" width="130" height="80" rx="12" 
-                        fill={zones.find(z => z.id === 'z4')?.status === 'critical' ? 'var(--accent-red)' : zones.find(z => z.id === 'z4')?.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.95" style={{ transition: 'fill 0.5s ease' }} />
-                  <text x="685" y="95" textAnchor="middle" fill="white" fontWeight="bold" fontSize="16">VIP Lounge (Z4)</text>
+                  {/* Zones */}
+                  {zones.map((zone, idx) => (
+                    zone.path ? (
+                      // Dynamic Generated Paths
+                      <path 
+                        key={idx} 
+                        d={zone.path} 
+                        fill={zone.status === 'critical' ? 'var(--accent-red)' : zone.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
+                        opacity="0.85" 
+                        style={{ transition: 'fill 0.5s ease', cursor: 'pointer' }}
+                        title={`${zone.name}`}
+                      />
+                    ) : (
+                      // Fallback for INITIAL_ZONES that don't have a path
+                      <text key={idx} x="400" y={200 + (idx * 30)} textAnchor="middle" fill="var(--text-muted)">
+                        Enable Generator for Map View
+                      </text>
+                    )
+                  ))}
                 </svg>
               </div>
             </div>
