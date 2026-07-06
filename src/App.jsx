@@ -33,6 +33,35 @@ function App() {
   const [genLevels, setGenLevels] = useState(3);
   const [genSeats, setGenSeats] = useState(50000);
 
+  // Staff State
+  const [staff, setStaff] = useState([
+    { id: 's1', name: 'Security Team Alpha', location: 'North Gate', count: 12, status: 'Active' },
+    { id: 's2', name: 'Medical Unit 3', location: 'East Wing', count: 4, status: 'On Route' },
+    { id: 's3', name: 'Crowd Control Team C', location: 'South Concourse', count: 8, status: 'Active' },
+    { id: 's4', name: 'Cleaning Crew B', location: 'VIP Lounge', count: 5, status: 'Standby' }
+  ]);
+  const [reassigningId, setReassigningId] = useState(null);
+  const [reassignZone, setReassignZone] = useState('');
+  const [reassignCount, setReassignCount] = useState(0);
+
+  const handleReassign = (team) => {
+    if (reassignCount < team.count && reassignCount > 0) {
+      // Split the team
+      const newTeam = {
+        id: 's' + Date.now(),
+        name: `${team.name} (Split)`,
+        location: reassignZone,
+        count: reassignCount,
+        status: 'On Route'
+      };
+      setStaff(prev => prev.map(s => s.id === team.id ? { ...s, count: s.count - reassignCount } : s).concat(newTeam));
+    } else {
+      // Move whole team
+      setStaff(prev => prev.map(s => s.id === team.id ? { ...s, location: reassignZone, status: 'On Route' } : s));
+    }
+    setReassigningId(null);
+  };
+
   // Auto-update global zones from generator map
   useEffect(() => {
     if (isGeneratorMode) {
@@ -327,13 +356,8 @@ Provide a brief, professional, and actionable response based on the live zone st
             <div className="glass-panel" style={{ padding: '1.5rem' }}>
               <h3 style={{ marginBottom: '1rem' }}>On-Duty Personnel (1,204)</h3>
               <div className="flex flex-col gap-4">
-                {[
-                  { name: 'Security Team Alpha', location: 'North Gate', count: 12, status: 'Active' },
-                  { name: 'Medical Unit 3', location: 'East Wing', count: 4, status: 'On Route' },
-                  { name: 'Crowd Control Team C', location: 'South Concourse', count: 8, status: 'Active' },
-                  { name: 'Cleaning Crew B', location: 'VIP Lounge', count: 5, status: 'Standby' }
-                ].map((s, idx) => (
-                  <div key={idx} style={{ padding: '1rem', background: 'var(--bg-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: 'var(--shadow-pressed)' }}>
+                {staff.map((s) => (
+                  <div key={s.id} style={{ padding: '1rem', background: 'var(--bg-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: 'var(--shadow-pressed)' }}>
                     <div className="flex items-center gap-4">
                       <Users color="var(--accent-blue)" />
                       <div>
@@ -341,11 +365,37 @@ Provide a brief, professional, and actionable response based on the live zone st
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Location: {s.location}</div>
                       </div>
                     </div>
-                    <div className="flex gap-4 items-center">
-                      <span style={{ background: 'rgba(255,255,255,0.1)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>{s.count} Members</span>
-                      <span style={{ color: s.status === 'Active' ? 'var(--accent-green)' : 'var(--accent-yellow)', fontSize: '0.9rem', fontWeight: 500 }}>{s.status}</span>
-                      <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => alert(`Reassigning ${s.name} to a new zone...`)}>Reassign</button>
-                    </div>
+                    {reassigningId === s.id ? (
+                      <div className="flex gap-2 items-center">
+                        <select 
+                          value={reassignZone} 
+                          onChange={e => setReassignZone(e.target.value)} 
+                          style={{ padding: '0.25rem 0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }}
+                        >
+                          {zones.map(z => <option key={z.id} value={z.name}>{z.name}</option>)}
+                        </select>
+                        <input 
+                          type="number" 
+                          max={s.count} 
+                          min={1} 
+                          value={reassignCount} 
+                          onChange={e => setReassignCount(Number(e.target.value))} 
+                          style={{ width: '60px', padding: '0.25rem 0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }} 
+                        />
+                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }} onClick={() => handleReassign(s)}>Confirm</button>
+                        <button className="btn btn-ghost" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }} onClick={() => setReassigningId(null)}>Cancel</button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-4 items-center">
+                        <span style={{ background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', color: 'var(--text-main)' }}>{s.count} Members</span>
+                        <span style={{ color: s.status === 'Active' ? 'var(--accent-green)' : s.status === 'On Route' ? 'var(--accent-blue)' : 'var(--accent-yellow)', fontSize: '0.9rem', fontWeight: 500 }}>{s.status}</span>
+                        <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => {
+                          setReassigningId(s.id);
+                          setReassignZone(zones[0]?.name || 'North Gate');
+                          setReassignCount(s.count);
+                        }}>Reassign</button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
