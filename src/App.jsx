@@ -64,7 +64,7 @@ function App() {
           const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
           if (apiKey && apiKey !== 'YOUR_API_KEY_HERE') {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
             const promptContext = `You are a Stadium Operations AI Assistant for the FIFA World Cup 2026.
 Current Live Zone Status (JSON):
 ${JSON.stringify(zones)}
