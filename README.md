@@ -36,17 +36,5 @@
 3. **Responsive Operations**: Staff will access the dashboard via central command center desktops or robust field tablets.
 4. **Contextual Knowledge**: The GenAI model is pre-prompted with the specific architectural blueprints and emergency protocols of World Cup stadiums.
 
-## 💻 5. Setup & Running
-Get the operational center up and running in seconds:
 
-```bash
-# 1. Install dependencies
-npm install
 
-# 2. Spin up the Vite dev server
-npm run dev
-```
-
-🌐 **Access the dashboard at:** `http://localhost:5173`
-
-> **Pro Tip:** Log in as *Command Center Admin* to view the Staff Deployment features, and toggle **Dark Mode** in the Settings tab to see the Neumorphic shadows pop! 🌙
