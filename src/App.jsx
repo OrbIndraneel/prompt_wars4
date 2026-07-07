@@ -243,7 +243,7 @@ Provide a brief, professional, and actionable response based on the live zone st
             <div className="top-metrics-row">
               {[
                 { title: 'Total Attendance', value: '68,402', icon: <Users size={24} color="var(--accent-red)" /> },
-                { title: 'Active Staff', value: '1,204', icon: <Activity size={24} color="var(--accent-blue)" /> },
+                { title: 'Active Staff', value: staff.reduce((acc, s) => acc + s.count, 0).toLocaleString(), icon: <Activity size={24} color="var(--accent-blue)" /> },
                 { title: 'Active Incidents', value: '3', icon: <ShieldAlert size={24} color="var(--accent-green)" /> },
                 { title: 'Avg Congestion', value: '42%', icon: <AlertTriangle size={24} color="var(--accent-yellow)" /> },
               ].map((metric, idx) => (
@@ -368,7 +368,7 @@ Provide a brief, professional, and actionable response based on the live zone st
         {activeTab === 'Staff Deployment' && (
           <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h3 style={{ marginBottom: '1rem' }}>On-Duty Personnel (1,204)</h3>
+              <h3 style={{ marginBottom: '1rem' }}>On-Duty Personnel ({staff.reduce((acc, s) => acc + s.count, 0)})</h3>
               <div className="flex flex-col gap-4">
                 {staff.map((s) => (
                   <div key={s.id} style={{ padding: '1rem', background: 'var(--bg-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: 'var(--shadow-pressed)' }}>
