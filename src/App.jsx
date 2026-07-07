@@ -111,34 +111,32 @@ function App() {
     setIsTyping(true);
 
     try {
-      // Small timeout to allow UI to show typing indicator
-      setTimeout(async () => {
-        try {
-          const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-          if (apiKey && apiKey !== 'YOUR_API_KEY_HERE') {
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-            const promptContext = `You are a Stadium Operations AI Assistant for the FIFA World Cup 2026.
+      try {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (apiKey && apiKey !== 'YOUR_API_KEY_HERE') {
+          const genAI = new GoogleGenerativeAI(apiKey);
+          // Changed to gemini-1.5-flash-8b for significantly faster responses
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
+          const promptContext = `You are a Stadium Operations AI Assistant for the FIFA World Cup 2026.
 Current Live Zone Status (JSON):
 ${JSON.stringify(zones)}
 
 The user asks: "${userMessage}"
 Provide a brief, professional, and actionable response based on the live zone status. Keep it under 3 sentences.`;
 
-            const result = await model.generateContent(promptContext);
-            setMessages(prev => [...prev, { role: 'ai', text: result.response.text() }]);
-          } else {
-            // Fallback to mock response if no API key is set
-            const mockResponse = generateMockAIResponse(userMessage, zones);
-            setMessages(prev => [...prev, { role: 'ai', text: mockResponse + " (Mock mode: No VITE_GEMINI_API_KEY found)" }]);
-          }
-        } catch (apiError) {
-          console.error("Gemini API Error:", apiError);
-          setMessages(prev => [...prev, { role: 'ai', text: "Error connecting to AI services. Please check your API key." }]);
-        } finally {
-          setIsTyping(false);
+          const result = await model.generateContent(promptContext);
+          setMessages(prev => [...prev, { role: 'ai', text: result.response.text() }]);
+        } else {
+          // Fallback to mock response if no API key is set
+          const mockResponse = generateMockAIResponse(userMessage, zones);
+          setMessages(prev => [...prev, { role: 'ai', text: mockResponse + " (Mock mode: No VITE_GEMINI_API_KEY found)" }]);
         }
-      }, 500);
+      } catch (apiError) {
+        console.error("Gemini API Error:", apiError);
+        setMessages(prev => [...prev, { role: 'ai', text: "Error connecting to AI services. Please check your API key." }]);
+      } finally {
+        setIsTyping(false);
+      }
 
     } catch (error) {
       console.error(error);
@@ -230,9 +228,7 @@ Provide a brief, professional, and actionable response based on the live zone st
             <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => setActiveTab('Incidents')}>
               <Bell size={20} />
             </button>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: 'var(--shadow-raised-sm)', color: 'var(--text-main)' }}>
-              SO
-            </div>
+            {/* SO label removed */}
           </div>
         </header>
 
