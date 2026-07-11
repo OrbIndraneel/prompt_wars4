@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
-import { 
-  Activity, Users, Map as MapIcon, Settings, Bell, Search, 
-  Send, AlertTriangle, CheckCircle, ShieldAlert 
-} from 'lucide-react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { useState, useEffect } from 'react';
+import { Search, Bell, Settings } from 'lucide-react';
 import { generateStadiumData } from './utils/stadiumGenerator';
 import LandingPage from './LandingPage';
+import Sidebar from './components/Sidebar';
+import Dashboard from './components/Dashboard';
+import ZoneMap from './components/ZoneMap';
+import StaffDeployment from './components/StaffDeployment';
+import Incidents from './components/Incidents';
+import Chatbot from './components/Chatbot';
 import './App.css';
 
 // MOCK DATA for Stadium Operations
@@ -21,20 +23,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [zones, setZones] = useState(INITIAL_ZONES);
   const [user, setUser] = useState(null);
-  const [chatInput, setChatInput] = useState('');
-  const [messages, setMessages] = useState([
-    { role: 'ai', text: 'StadiumOps AI initialized. How can I assist you with current operations?' }
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const chatEndRef = useRef(null);
-
-  // Apply Theme
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   // Generator State
   const [isGeneratorMode, setIsGeneratorMode] = useState(false);
@@ -53,9 +42,14 @@ function App() {
   const [reassignZone, setReassignZone] = useState('');
   const [reassignCount, setReassignCount] = useState(0);
 
+  // Apply Theme
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   const handleReassign = (team) => {
     if (reassignCount < team.count && reassignCount > 0) {
-      // Split the team
       const newTeam = {
         id: 's' + Date.now(),
         name: `${team.name} (Split)`,
@@ -65,7 +59,6 @@ function App() {
       };
       setStaff(prev => prev.map(s => s.id === team.id ? { ...s, count: s.count - reassignCount } : s).concat(newTeam));
     } else {
-      // Move whole team and update its size if they requested more people
       setStaff(prev => prev.map(s => s.id === team.id ? { ...s, location: reassignZone, status: 'On Route', count: reassignCount } : s));
     }
     setReassigningId(null);
@@ -78,17 +71,11 @@ function App() {
     }
   }, [genGates, genLevels, genSeats, isGeneratorMode]);
 
-  // Auto-scroll chat
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
       setZones(prev => prev.map(zone => {
-        // If the zone has a path (meaning it's generated), keep the path
-        const variation = Math.floor(Math.random() * 11) - 5; // -5 to +5
+        const variation = Math.floor(Math.random() * 11) - 5;
         let newDensity = Math.max(0, Math.min(100, zone.density + variation));
         
         let newStatus = 'normal';
@@ -101,343 +88,49 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-
-    const userMessage = chatInput;
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setChatInput('');
-    setIsTyping(true);
-
-    try {
-      try {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (apiKey && apiKey !== 'YOUR_API_KEY_HERE') {
-          const genAI = new GoogleGenerativeAI(apiKey);
-          // Changed to gemini-1.5-flash-8b for significantly faster responses
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
-          const promptContext = `You are a Stadium Operations AI Assistant for the FIFA World Cup 2026.
-Current Live Zone Status (JSON):
-${JSON.stringify(zones)}
-
-The user asks: "${userMessage}"
-Provide a brief, professional, and actionable response based on the live zone status. Keep it under 3 sentences.`;
-
-          const result = await model.generateContent(promptContext);
-          setMessages(prev => [...prev, { role: 'ai', text: result.response.text() }]);
-        } else {
-          // Fallback to mock response if no API key is set
-          const mockResponse = generateMockAIResponse(userMessage, zones);
-          setMessages(prev => [...prev, { role: 'ai', text: mockResponse + " (Mock mode: No VITE_GEMINI_API_KEY found)" }]);
-        }
-      } catch (apiError) {
-        console.error("Gemini API Error:", apiError);
-        setMessages(prev => [...prev, { role: 'ai', text: "Error connecting to AI services. Please check your API key." }]);
-      } finally {
-        setIsTyping(false);
-      }
-
-    } catch (error) {
-      console.error(error);
-      setIsTyping(false);
-    }
-  };
-
-  const generateMockAIResponse = (query, currentZones) => {
-    const q = query.toLowerCase();
-    const criticalZone = currentZones.find(z => z.status === 'critical');
-    
-    if (q.includes('congestion') || q.includes('crowd') || q.includes('busy')) {
-      if (criticalZone) {
-        return `I've analyzed the live feeds. ${criticalZone.name} is currently experiencing critical congestion (${criticalZone.density}%). I recommend opening overflow lanes 3 and 4 and dispatching 2 additional crowd management staff.`;
-      }
-      return "Current crowd levels are manageable across all sectors. The busiest area is North Gate at 85% capacity.";
-    }
-    
-    if (q.includes('evacuate') || q.includes('emergency')) {
-      return "Generating emergency routing... Direct all East Wing traffic to Exits 12-15. Overriding digital signage now.";
-    }
-
-    return "I can assist with crowd management, resource allocation, and emergency routing. What specific area are you inquiring about?";
-  };
-
-  // Sidebar Navigation
-  const navItems = [
-    { name: 'Overview', icon: <Activity size={20} /> },
-    { name: 'Zone Maps', icon: <MapIcon size={20} /> },
-    user?.role === 'admin' ? { name: 'Staff Deployment', icon: <Users size={20} /> } : null,
-    { name: 'Incidents', icon: <Bell size={20} /> }
-  ].filter(Boolean);
-
   if (!user) {
     return <LandingPage onLogin={(userData) => { setUser(userData); setActiveTab('Overview'); }} />;
   }
 
   return (
     <div className="app-container">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="brand">
-          <img src="/logo.png" alt="OnStadium Logo" style={{ height: '36px', filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.2))' }} />
-          OnStadium
-        </div>
-        
-        <nav className="nav-links">
-          {navItems.map(tab => (
-            <div 
-              key={tab.name}
-              className={`nav-item ${activeTab === tab.name ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.name)}
-            >
-              {tab.icon} {tab.name}
-            </div>
-          ))}
-          <div style={{ flexGrow: 1 }}></div>
-          <div 
-            className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Settings')}
-          >
-            <Settings size={20} /> Settings
-          </div>
-          
-          <div className="logout-card" style={{ marginTop: '2rem', cursor: 'pointer' }} onClick={() => setUser(null)}>
-            <div className="flex items-center gap-2">
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'white', color: 'var(--accent-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                {user.id ? user.id.substring(0, 2).toUpperCase() : 'U'}
-              </div>
-              <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{user.id}</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.8, textTransform: 'capitalize' }}>{user.role}</div>
-              </div>
-            </div>
-            <button className="btn btn-ghost" style={{ padding: '0.25rem', color: 'var(--text-muted)' }}>➔</button>
-          </div>
-        </nav>
-      </aside>
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} user={user} setUser={setUser} />
 
-      {/* Main Content */}
       <main className="main-content">
         <header className="glass-header topbar">
           <h1 style={{ fontSize: '1.25rem', fontWeight: 600 }}>{activeTab === 'Overview' ? 'Operational Intelligence' : activeTab}</h1>
           <div className="flex items-center gap-4">
             <div style={{ position: 'relative' }}>
+              <label htmlFor="topSearch" className="sr-only" style={{ display: 'none' }}>Search</label>
               <Search size={18} style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }} />
-              <input type="text" className="search-bar" placeholder="Search operations..." style={{ paddingLeft: '2.5rem' }} />
+              <input id="topSearch" type="text" className="search-bar" placeholder="Search operations..." style={{ paddingLeft: '2.5rem' }} />
             </div>
-            <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => setActiveTab('Incidents')}>
+            <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={() => setActiveTab('Incidents')} aria-label="View Incidents">
               <Bell size={20} />
             </button>
-            {/* SO label removed */}
           </div>
         </header>
 
-        {activeTab === 'Overview' && (
-          <div className="dashboard-grid">
-            
-            {/* Top Metrics Row */}
-            <div className="top-metrics-row">
-              {[
-                { title: 'Total Attendance', value: '68,402', icon: <Users size={24} color="var(--accent-red)" /> },
-                { title: 'Active Staff', value: staff.reduce((acc, s) => acc + s.count, 0).toLocaleString(), icon: <Activity size={24} color="var(--accent-blue)" /> },
-                { title: 'Active Incidents', value: '3', icon: <ShieldAlert size={24} color="var(--accent-green)" /> },
-                { title: 'Avg Congestion', value: '42%', icon: <AlertTriangle size={24} color="var(--accent-yellow)" /> },
-              ].map((metric, idx) => (
-                <div key={idx} className="card" style={{ flex: 1, padding: '1.5rem 1.25rem', flexDirection: 'row', alignItems: 'center', gap: '1.25rem' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-pressed)' }}>
-                    {metric.icon}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.2 }}>{metric.title}</div>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-main)' }}>{metric.value}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Stadium Map Widget */}
-            <div className="card stadium-map">
-              <div className="card-title">
-                <span>Live Zone Status</span>
-                <button className="btn btn-ghost" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }} onClick={() => setActiveTab('Zone Maps')}>Full Map</button>
-              </div>
-              
-              <div className="flex flex-col gap-4" style={{ marginTop: '1rem', flexGrow: 1, overflowY: 'auto', paddingRight: '0.5rem' }}>
-                {zones.map(zone => (
-                  <div key={zone.id} className="metric-item animate-fade-in">
-                    <div className="flex items-center gap-4">
-                      {zone.status === 'critical' ? <ShieldAlert color="var(--accent-red)" /> : 
-                       zone.status === 'warning' ? <AlertTriangle color="var(--accent-yellow)" /> : 
-                       <CheckCircle color="var(--accent-green)" />}
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>{zone.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Status: {zone.status.toUpperCase()}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div style={{ width: 150, height: 8, borderRadius: 4, overflow: 'hidden', boxShadow: 'var(--shadow-pressed)' }}>
-                        <div style={{ 
-                          height: '100%', 
-                          width: `${zone.density}%`,
-                          background: zone.status === 'critical' ? 'var(--accent-red)' : zone.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)',
-                          transition: 'width 0.5s ease'
-                        }}></div>
-                      </div>
-                      <div className="metric-value" style={{ color: 'var(--text-main)' }}>{zone.density}%</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        )}
-
+        {activeTab === 'Overview' && <Dashboard staff={staff} zones={zones} setActiveTab={setActiveTab} />}
         {activeTab === 'Zone Maps' && (
-          <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="flex justify-between items-center">
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Interactive Mapping</h2>
-              <button 
-                className="btn btn-primary" 
-                onClick={() => setIsGeneratorMode(!isGeneratorMode)}
-              >
-                {isGeneratorMode ? 'Exit Generator' : 'Layout Generator'}
-              </button>
-            </div>
-
-            {isGeneratorMode && (
-              <div className="card animate-fade-in" style={{ padding: '1.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Number of Gates ({genGates})</label>
-                  <input type="range" min="2" max="16" value={genGates} onChange={(e) => setGenGates(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Tiers / Levels ({genLevels})</label>
-                  <input type="range" min="1" max="5" value={genLevels} onChange={(e) => setGenLevels(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Capacity ({genSeats.toLocaleString()})</label>
-                  <input type="range" min="10000" max="100000" step="5000" value={genSeats} onChange={(e) => setGenSeats(Number(e.target.value))} style={{ width: '100%', marginTop: '0.5rem' }} />
-                </div>
-              </div>
-            )}
-
-            <div className="card" style={{ flexGrow: 1, minHeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: 20, left: 20, background: 'var(--bg-color)', padding: '1.25rem', borderRadius: '12px', zIndex: 10, boxShadow: 'var(--shadow-raised-sm)' }}>
-                <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Map Legend</h3>
-                <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-green)', borderRadius: '50%' }}></div> Normal</div>
-                <div className="flex items-center gap-2" style={{ marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-yellow)', borderRadius: '50%' }}></div> Warning</div>
-                <div className="flex items-center gap-2" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}><div style={{ width: 12, height: 12, background: 'var(--accent-red)', borderRadius: '50%' }}></div> Critical</div>
-              </div>
-              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg viewBox="0 0 800 600" style={{ width: '100%', height: '100%', filter: 'drop-shadow(var(--shadow-raised))' }}>
-                  {/* Center Pitch */}
-                  <rect x="340" y="210" width="120" height="180" rx="30" fill="transparent" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
-                  <circle cx="400" cy="300" r="20" fill="transparent" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
-                  <line x1="340" y1="300" x2="460" y2="300" stroke="var(--text-muted)" strokeWidth="3" strokeDasharray="8 8" opacity="0.3" />
-                  
-                  {/* Zones */}
-                  {zones.map((zone, idx) => (
-                    zone.path ? (
-                      // Dynamic Generated Paths
-                      <path 
-                        key={idx} 
-                        d={zone.path} 
-                        fill={zone.status === 'critical' ? 'var(--accent-red)' : zone.status === 'warning' ? 'var(--accent-yellow)' : 'var(--accent-green)'} 
-                        opacity="0.85" 
-                        style={{ transition: 'fill 0.5s ease', cursor: 'pointer' }}
-                        title={`${zone.name}`}
-                      />
-                    ) : (
-                      // Fallback for INITIAL_ZONES that don't have a path
-                      <text key={idx} x="400" y={200 + (idx * 30)} textAnchor="middle" fill="var(--text-muted)">
-                        Enable Generator for Map View
-                      </text>
-                    )
-                  ))}
-                </svg>
-              </div>
-            </div>
-          </div>
+          <ZoneMap 
+            isGeneratorMode={isGeneratorMode} setIsGeneratorMode={setIsGeneratorMode}
+            genGates={genGates} setGenGates={setGenGates}
+            genLevels={genLevels} setGenLevels={setGenLevels}
+            genSeats={genSeats} setGenSeats={setGenSeats}
+            zones={zones}
+          />
         )}
-
         {activeTab === 'Staff Deployment' && (
-          <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h3 style={{ marginBottom: '1rem' }}>On-Duty Personnel ({staff.reduce((acc, s) => acc + s.count, 0)})</h3>
-              <div className="flex flex-col gap-4">
-                {staff.map((s) => (
-                  <div key={s.id} style={{ padding: '1rem', background: 'var(--bg-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: 'var(--shadow-pressed)' }}>
-                    <div className="flex items-center gap-4">
-                      <Users color="var(--accent-blue)" />
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{s.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Location: {s.location}</div>
-                      </div>
-                    </div>
-                    {reassigningId === s.id ? (
-                      <div className="flex gap-2 items-center">
-                        <select 
-                          value={reassignZone} 
-                          onChange={e => setReassignZone(e.target.value)} 
-                          style={{ padding: '0.25rem 0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }}
-                        >
-                          {zones.map(z => <option key={z.id} value={z.name}>{z.name}</option>)}
-                        </select>
-                        <input 
-                          type="number" 
-                          min={1} 
-                          value={reassignCount} 
-                          onChange={e => setReassignCount(Number(e.target.value))} 
-                          style={{ width: '60px', padding: '0.25rem 0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none' }} 
-                        />
-                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }} onClick={() => handleReassign(s)}>Confirm</button>
-                        <button className="btn btn-ghost" style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }} onClick={() => setReassigningId(null)}>Cancel</button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-4 items-center">
-                        <span style={{ background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', color: 'var(--text-main)' }}>{s.count} Members</span>
-                        <span style={{ color: s.status === 'Active' ? 'var(--accent-green)' : s.status === 'On Route' ? 'var(--accent-blue)' : 'var(--accent-yellow)', fontSize: '0.9rem', fontWeight: 500 }}>{s.status}</span>
-                        <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => {
-                          setReassigningId(s.id);
-                          setReassignZone(zones[0]?.name || 'North Gate');
-                          setReassignCount(s.count);
-                        }}>Reassign</button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <StaffDeployment 
+            staff={staff} zones={zones} 
+            reassigningId={reassigningId} setReassigningId={setReassigningId}
+            reassignZone={reassignZone} setReassignZone={setReassignZone}
+            reassignCount={reassignCount} setReassignCount={setReassignCount}
+            handleReassign={handleReassign}
+          />
         )}
-
-        {activeTab === 'Incidents' && (
-          <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <div className="flex justify-between items-center" style={{ marginBottom: '1rem' }}>
-                <h3>Active Incidents & Alerts</h3>
-                <button className="btn btn-primary" style={{ fontSize: '0.9rem' }} onClick={() => alert('Opening Incident Report form...')}>Report Incident</button>
-              </div>
-              <div className="flex flex-col gap-4">
-                {[
-                  { title: 'Severe Congestion at Gate 3', time: '2 mins ago', severity: 'High', type: 'Crowd Control' },
-                  { title: 'Medical emergency reported in Section 104', time: '15 mins ago', severity: 'Critical', type: 'Medical' },
-                  { title: 'Spill on Concourse B', time: '45 mins ago', severity: 'Low', type: 'Maintenance' },
-                ].map((inc, idx) => (
-                  <div key={idx} style={{ padding: '1rem', background: 'var(--bg-color)', borderLeft: `4px solid ${inc.severity === 'Critical' ? 'var(--accent-red)' : inc.severity === 'High' ? 'var(--accent-yellow)' : 'var(--accent-blue)'}`, borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: 'var(--shadow-pressed)' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{inc.title}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{inc.time} • Type: {inc.type}</div>
-                    </div>
-                    <button className="btn btn-ghost" style={{ fontSize: '0.8rem' }} onClick={() => alert(`Viewing details for: ${inc.title}`)}>View Details</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
+        {activeTab === 'Incidents' && <Incidents />}
         {activeTab === 'Settings' && (
           <div style={{ padding: '1.5rem 2rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div className="card" style={{ padding: '2rem' }}>
@@ -450,8 +143,9 @@ Provide a brief, professional, and actionable response based on the live zone st
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Theme Mode</span>
+                      <label htmlFor="themeSelect" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Theme Mode</label>
                       <select 
+                        id="themeSelect"
                         value={theme}
                         onChange={(e) => setTheme(e.target.value)}
                         style={{ padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'var(--bg-color)', boxShadow: 'var(--shadow-raised-sm)', outline: 'none', color: 'var(--text-main)' }}
@@ -461,8 +155,8 @@ Provide a brief, professional, and actionable response based on the live zone st
                       </select>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Push Notifications</span>
-                      <input type="checkbox" defaultChecked style={{ width: '1.2rem', height: '1.2rem' }} />
+                      <label htmlFor="pushNotif" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Push Notifications</label>
+                      <input id="pushNotif" type="checkbox" defaultChecked style={{ width: '1.2rem', height: '1.2rem' }} />
                     </div>
                   </div>
                 </div>
@@ -476,46 +170,7 @@ Provide a brief, professional, and actionable response based on the live zone st
         )}
       </main>
 
-      {/* Floating Action Button */}
-      <button className="chatbot-fab" onClick={() => setIsChatOpen(!isChatOpen)}>
-        <Activity size={28} />
-      </button>
-
-      {/* AI Assistant Popup */}
-      {isChatOpen && (
-        <div className="ai-assistant-popup animate-fade-in">
-          <div className="card-title">
-            <div className="flex items-center gap-2">
-              <Activity size={18} />
-              Ops Assistant AI
-            </div>
-            <button className="btn btn-ghost" style={{ padding: 0 }} onClick={() => setIsChatOpen(false)}>✕</button>
-          </div>
-          <div className="chat-messages" style={{ overflowY: 'auto', flexGrow: 1, paddingRight: '0.5rem', marginBottom: '1rem' }}>
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`message ${msg.role}`}>
-                {msg.text}
-              </div>
-            ))}
-            {isTyping && (
-              <div className="message ai" style={{ opacity: 0.9 }}>Analyzing stadium data...</div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-          <form onSubmit={handleSendMessage} className="chat-input-container">
-            <input 
-              type="text" 
-              className="chat-input"
-              placeholder="Ask for routing..." 
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-            />
-            <button type="submit" className="icon-btn" disabled={!chatInput.trim() || isTyping}>
-              <Send size={18} />
-            </button>
-          </form>
-        </div>
-      )}
+      <Chatbot zones={zones} />
     </div>
   );
 }
