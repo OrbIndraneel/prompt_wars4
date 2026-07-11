@@ -18,6 +18,11 @@
 ## 🧠 2. Approach and Logic
 **OnStadium** is a cutting-edge, GenAI-enabled operational intelligence dashboard designed for stadium staff, security personnel, and venue managers. It provides real-time, birds-eye oversight of crowd density, staff deployment, and active incidents.
 
+### 🏆 Alignment with Problem Statement & Judging Criteria:
+- **Operational Intelligence:** Replaces static maps with a dynamic, real-time dashboard.
+- **Actionable AI (Gemini Integration):** The GenAI doesn't just chat; it processes live IoT mock data to recommend dynamic staff re-routings and emergency protocols.
+- **Scalability:** The architecture (simulated via Vite/React) handles high-frequency data updates.
+
 ### ⚙️ Core Engineering Pillars:
 * 📡 **Mock IoT Data Engine**: Simulates a live real-time data feed representing stadium congestion metrics (e.g., North Gate density, VIP Lounge capacity) updating every few seconds to emulate live turnstile and CCTV sensor data.
 * 🚦 **Dynamic Thresholding**: Visual alert states (`Normal`, `Warning`, `Critical`) are logically calculated on the fly. The UI instantly transforms to grab the operator's attention using a premium Neumorphism design system.

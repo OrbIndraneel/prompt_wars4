@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import './LandingPage.css';
 
 function LandingPage({ onLogin }) {
@@ -6,15 +7,17 @@ function LandingPage({ onLogin }) {
   const [pin, setPin] = useState('');
   const [role, setRole] = useState('admin');
 
-  const handleLogin = (e) => {
+  const handleLogin = useCallback((e) => {
     e.preventDefault();
+    // SECURITY NOTE: This is a frontend mock for hackathon purposes.
+    // In production, authentication and session management must happen on a secure backend server.
     if (staffId && pin) {
       onLogin({ id: staffId, role });
     }
-  };
+  }, [staffId, pin, role, onLogin]);
 
   return (
-    <div className="landing-page">
+    <main className="landing-page">
       
       {/* 3D Isometric Floating Stadium Graphic */}
       <div className="hero-image-container">
@@ -35,34 +38,39 @@ function LandingPage({ onLogin }) {
             </div>
           </div>
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <form onSubmit={handleLogin} className="login-form">
             <div className="input-group">
-              <label className="input-label">Staff ID / Callsign</label>
+              <label htmlFor="staffId" className="input-label">Staff ID / Callsign</label>
               <input 
+                id="staffId"
                 type="text" 
                 className="neumorphic-input" 
                 placeholder="e.g. SEC-Alpha-01" 
                 value={staffId}
                 onChange={(e) => setStaffId(e.target.value)}
                 required
+                aria-required="true"
               />
             </div>
             
             <div className="input-group">
-              <label className="input-label">Secure PIN</label>
+              <label htmlFor="pin" className="input-label">Secure PIN</label>
               <input 
+                id="pin"
                 type="password" 
                 className="neumorphic-input" 
                 placeholder="••••••••" 
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 required
+                aria-required="true"
               />
             </div>
 
             <div className="input-group">
-              <label className="input-label">Role</label>
+              <label htmlFor="role" className="input-label">Role</label>
               <select 
+                id="role"
                 className="neumorphic-input"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -77,10 +85,13 @@ function LandingPage({ onLogin }) {
             </button>
           </form>
         </div>
-
       </div>
-    </div>
+    </main>
   );
 }
+
+LandingPage.propTypes = {
+  onLogin: PropTypes.func.isRequired,
+};
 
 export default LandingPage;
